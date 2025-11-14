@@ -47,6 +47,15 @@ namespace triqs_cthyb {
     /// General operator Green's function :math:`O(\tau)` in imaginary time.
     std::optional<gf<imtime, scalar_valued>> O_tau;
 
+    /// Green's function with operator insertions :math:`G_tau_with_O1_O2(\tau)` in imaginary time.
+    std::optional<G_tau_G_target_t> G_tau_with_O1_O2;
+
+    /// Green's function with O1 insertion :math:`G_tau_with_O1(\tau)` in imaginary time.
+    std::optional<G_tau_G_target_t> G_tau_with_O1;
+
+    /// Green's function with O2 insertion :math:`G_tau_with_O2(\tau)` in imaginary time.
+    std::optional<G_tau_G_target_t> G_tau_with_O2;
+
     // -- Two-particle Green's functions
 
     /// Two-particle Green's function :math:`G^{(2)}(\tau_1,\tau_2,\tau_3)` (three Fermionic imaginary times)

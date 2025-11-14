@@ -63,6 +63,21 @@ c.add_member(c_name = "O_tau",
              read_only= True,
              doc = r"""General operator Green's function :math:`O(\tau)` in imaginary time.""")
 
+c.add_member(c_name = "G_tau_with_O1_O2",
+             c_type = "std::optional<G_tau_G_target_t>",
+             read_only= True,
+             doc = r"""Green's function with operator insertions :math:`G(\tau)` with O1 and O2 operators in imaginary time.""")
+
+c.add_member(c_name = "G_tau_with_O1",
+             c_type = "std::optional<G_tau_G_target_t>",
+             read_only= True,
+             doc = r"""Green's function with O1 insertion :math:`G(\tau)` in imaginary time.""")
+
+c.add_member(c_name = "G_tau_with_O2",
+             c_type = "std::optional<G_tau_G_target_t>",
+             read_only= True,
+             doc = r"""Green's function with O2 insertion :math:`G(\tau)` in imaginary time.""")
+
 c.add_member(c_name = "G2_tau",
              c_type = "std::optional<G2_tau_t>",
              read_only= True,
@@ -194,6 +209,8 @@ c.add_method("""void solve (**solve_parameters_t)""",
 | measure_O_tau                 | std::optional<std::pair<many_body_op_t, many_body_op_t>> | {}                            | Measure O_tau by insertion                                                                                        |
 +-------------------------------+----------------------------------------------------------+-------------------------------+-------------------------------------------------------------------------------------------------------------------+
 | measure_O_tau_min_ins         | int                                                      | 10                            | Minumum of operator insertions in: O_tau by insertion measure                                                     |
++-------------------------------+----------------------------------------------------------+-------------------------------+-------------------------------------------------------------------------------------------------------------------+
+| measure_G_tau_with_O1_O2      | std::optional<std::pair<many_body_op_t, many_body_op_t>> | {}                            | Measure G_tau_with_O1_O2 by insertion                                                                             |
 +-------------------------------+----------------------------------------------------------+-------------------------------+-------------------------------------------------------------------------------------------------------------------+
 | measure_G2_tau                | bool                                                     | false                         | Measure G^4(tau,tau',tau'') with three fermionic times.                                                           |
 +-------------------------------+----------------------------------------------------------+-------------------------------+-------------------------------------------------------------------------------------------------------------------+
@@ -445,6 +462,11 @@ c.add_member(c_name = "measure_O_tau_min_ins",
              c_type = "int",
              initializer = """ 10 """,
              doc = r"""Minumum of operator insertions in: O_tau by insertion measure""")
+
+c.add_member(c_name = "measure_G_tau_with_O1_O2",
+             c_type = "std::optional<std::pair<many_body_op_t, many_body_op_t>>",
+             initializer = """ {} """,
+             doc = r"""Measure G_tau_with_O1_O2 by insertion""")
 
 c.add_member(c_name = "measure_G2_tau",
              c_type = "bool",

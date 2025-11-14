@@ -104,6 +104,7 @@ namespace triqs_cthyb {
     h5_write(grp, "measure_G_l", sp.measure_G_l);
     h5_write(grp, "measure_O_tau", sp.measure_O_tau);
     h5_write(grp, "measure_O_tau_min_ins", sp.measure_O_tau_min_ins);
+    h5_write(grp, "measure_G_tau_with_O1_O2", sp.measure_G_tau_with_O1_O2);
     h5_write(grp, "measure_G2_tau", sp.measure_G2_tau);
     h5_write(grp, "measure_G2_iw", sp.measure_G2_iw);
     h5_write(grp, "measure_G2_iw_nfft", sp.measure_G2_iw_nfft);
@@ -171,6 +172,7 @@ namespace triqs_cthyb {
     h5_read(grp, "measure_G_l", sp.measure_G_l);
     if( grp.has_key("measure_O_tau") ) h5_read(grp, "measure_O_tau", sp.measure_O_tau);
     h5_read(grp, "measure_O_tau_min_ins", sp.measure_O_tau_min_ins);
+    if( grp.has_key("measure_G_tau_with_O1_O2") ) h5_read(grp, "measure_G_tau_with_O1_O2", sp.measure_G_tau_with_O1_O2);
     h5_read(grp, "measure_G2_tau", sp.measure_G2_tau);
     h5_read(grp, "measure_G2_iw", sp.measure_G2_iw);
     h5_read(grp, "measure_G2_iw_nfft", sp.measure_G2_iw_nfft);
