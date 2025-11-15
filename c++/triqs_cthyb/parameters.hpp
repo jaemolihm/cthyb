@@ -135,6 +135,9 @@ namespace triqs_cthyb {
     /// Measure G_tau_with_O1_O2 by insertion
     std::optional<std::pair<many_body_op_t, many_body_op_t>> measure_G_tau_with_O1_O2 = {};
 
+    /// DEBUG: Measure G_tau_with_O1_O2 with optimized trace caching (for performance comparison)
+    std::optional<std::pair<many_body_op_t, many_body_op_t>> measure_G_tau_with_O1_O2_debug = {};
+
     /// Measure G^4(tau,tau',tau'') with three fermionic times.
     bool measure_G2_tau = false;
 
