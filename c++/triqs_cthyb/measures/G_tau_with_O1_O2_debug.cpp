@@ -97,7 +97,7 @@ namespace triqs_cthyb {
       auto &det = data.dets[block_idx];
       int det_size = det.size();
 
-      // PHASE 2: Pre-compute O1 traces using try_replace
+      // Pre-compute O1 traces using try_replace
       // Replace c_β(τ_y) with [O1, c_β] to compute commutator directly
       for (int j = 0; j < det_size; ++j) {
         auto const &y = det.get_y(j);  // y = {tau_y, inner_index}
@@ -114,7 +114,7 @@ namespace triqs_cthyb {
         data.imp_trace.cancel_replace();
       }
 
-      // PHASE 3: Pre-compute O2 traces using try_replace
+      // Pre-compute O2 traces using try_replace
       // Replace c_α†(τ_x) with [O2, c_α†] to compute commutator directly
       for (int i = 0; i < det_size; ++i) {
         auto const &x = det.get_x(i);  // x = {tau_x, inner_index}
@@ -131,7 +131,7 @@ namespace triqs_cthyb {
         data.imp_trace.cancel_replace();
       }
 
-      // PHASE 4: Pre-compute O1+O2 traces using joint try_replace
+      // Pre-compute O1+O2 traces using joint try_replace
       // Replace both c_β(τ_y) with [O1, c_β] AND c_α†(τ_x) with [O2, c_α†]
       for (int j = 0; j < det_size; ++j) {
         auto const &y = det.get_y(j);
@@ -160,8 +160,7 @@ namespace triqs_cthyb {
         }
       }
 
-      // PHASE 5: Iterate over all (c†, c) pairs in the determinant for this block
-      // Computing: ⟨O1 c_β(τ_y) O2 c_α†(τ_x)⟩ - ⟨c_β(τ_y) O1 O2 c_α†(τ_x)⟩ - ⟨O1 c_β(τ_y) c_α†(τ_x) O2⟩ + ⟨c_β(τ_y) O1 c_α†(τ_x) O2⟩
+      // Iterate over all (c†, c) pairs in the determinant for this block
       foreach (data.dets[block_idx], [this, s, block_idx, baseline_trace,
         &op1_trace_cache, &op2_trace_cache, &op12_trace_cache](op_t const &x, op_t const &y, det_scalar_t M) {
 
@@ -190,8 +189,7 @@ namespace triqs_cthyb {
           }
         }
 
-        // Case 2: O1 inserted AFTER c (at τ_y+ε) - for G_tau_with_O1 [OPTIMIZED: CACHED]
-        // Measures: ⟨O1 c_β(τ_y) c_α†(τ_x)⟩ - ⟨c_β(τ_y) O1 c_α†(τ_x)⟩
+        // Case 2: measure ⟨[O1, c_β(τ_y)] c_α†(τ_x)⟩
         {
           // Lookup pre-computed trace from cache
           auto modified_trace = op1_trace_cache[y.first];
@@ -212,8 +210,7 @@ namespace triqs_cthyb {
           }
         }
 
-        // Case 3: O2 inserted AFTER c† (at τ_x+ε) - for G_tau_with_O2 [OPTIMIZED: CACHED]
-        // Measures: ⟨c_β(τ_y) O2 c_α†(τ_x)⟩ - ⟨c_β(τ_y) c_α†(τ_x) O2⟩
+        // Case 3: measure ⟨c_β(τ_y) [O2, c_α†(τ_x)]⟩
         {
           // Lookup pre-computed trace from cache
           auto modified_trace = op2_trace_cache[x.first];
