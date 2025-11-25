@@ -121,8 +121,8 @@ class Solver(SolverCore):
                     Index of ``iw`` from which to start fitting.
         fit_max_n : integer, optional, default = ``n_iw``
                     Index of ``iw`` to fit until.
-        measure_G_tau_with_O1_O2_debug : tuple(Operator, Operator), optional, default = None
-                           Enable operator-decorated measurements for Improved Estimator.
+        measure_G_tau_with_O1_O2_debug : bool, optional, default = False
+                           Enable composite Green's function measurements for Improved Estimator.
                            Requires measure_G_tau = True.
                            If provided, post-processing will compute:
 

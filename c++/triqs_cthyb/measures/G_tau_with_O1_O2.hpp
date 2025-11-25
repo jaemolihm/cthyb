@@ -37,7 +37,7 @@ namespace triqs_cthyb {
 
     public:
     measure_G_tau_with_O1_O2(qmc_data const &data, int n_tau, gf_struct_t const &gf_struct,
-                             many_body_op_t const &op1, many_body_op_t const &op2,
+                             many_body_op_t const &h_op,
                              container_set_t &results);
     void accumulate(mc_weight_t s);
     void collect_results(mpi::communicator const &c);
@@ -48,7 +48,7 @@ namespace triqs_cthyb {
     G_tau_G_target_t::view_type G_tau_with_O1_O2;
     G_tau_G_target_t::view_type G_tau_with_O1;
     G_tau_G_target_t::view_type G_tau_with_O2;
-    op_desc op1_d, op2_d;
+    op_desc h_op_d; // H_loc operator descriptor
   };
 
 } // namespace triqs_cthyb

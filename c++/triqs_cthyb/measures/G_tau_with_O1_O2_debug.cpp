@@ -31,7 +31,7 @@ namespace triqs_cthyb {
   using namespace triqs::mesh;
 
   measure_G_tau_with_O1_O2_debug::measure_G_tau_with_O1_O2_debug(qmc_data const &data, int n_tau, gf_struct_t const &gf_struct,
-                                                                 many_body_op_t const &op1, many_body_op_t const &op2,
+                                                                 many_body_op_t const &h_op,
                                                                  container_set_t &results)
      : data(data), average_sign(0) {
     // Use debug container fields
@@ -47,10 +47,6 @@ namespace triqs_cthyb {
     G_tau_with_O2.rebind(*results.G_tau_with_O2_debug);
     G_tau_with_O2() = 0.0;
 
-    // Attach operators to impurity trace as auxiliary operators
-    op1_d = data.imp_trace.attach_aux_operator(op1);
-    op2_d = data.imp_trace.attach_aux_operator(op2);
-
     // Pre-construct commutator operators for all (block, inner_index) pairs
     // This avoids repeated construction during accumulate()
     int block_idx = 0;
@@ -63,13 +59,13 @@ namespace triqs_cthyb {
         many_body_op_t c_op = triqs::operators::c<h_scalar_t>(block_name, inner);         // c operator
         many_body_op_t cdag_op = triqs::operators::c_dag<h_scalar_t>(block_name, inner);  // c† operator
 
-        // Construct and attach [O1, c_β] commutator
-        auto comm_O1 = op1 * c_op - c_op * op1;
-        comm_O1_c[key] = data.imp_trace.attach_aux_operator(comm_O1);
+        // Construct and attach [H_loc, c_β] commutator
+        auto comm_H_c_op = h_op * c_op - c_op * h_op;
+        comm_H_c[key] = data.imp_trace.attach_aux_operator(comm_H_c_op);
 
-        // Construct and attach [O2, c_β†] commutator
-        auto comm_O2 = op2 * cdag_op - cdag_op * op2;
-        comm_O2_cdag[key] = data.imp_trace.attach_aux_operator(comm_O2);
+        // Construct and attach [H_loc, c_β†] commutator
+        auto comm_H_cdag_op = h_op * cdag_op - cdag_op * h_op;
+        comm_H_cdag[key] = data.imp_trace.attach_aux_operator(comm_H_cdag_op);
       }
       block_idx++;
     }
@@ -104,9 +100,9 @@ namespace triqs_cthyb {
         auto tau_y = y.first;
         auto key = std::make_pair(block_idx, y.second);
 
-        // Replace c(tau_y) with [O1, c] commutator
+        // Replace c(tau_y) with [H, c] commutator
         updated_ops.clear();
-        updated_ops[tau_y] = comm_O1_c[key];
+        updated_ops[tau_y] = comm_H_c[key];
 
         data.imp_trace.try_replace(updated_ops);
         auto [w, rw] = data.imp_trace.compute();
@@ -121,9 +117,9 @@ namespace triqs_cthyb {
         auto tau_x = x.first;
         auto key = std::make_pair(block_idx, x.second);
 
-        // Replace c†(tau_x) with [O2, c†] commutator
+        // Replace c†(tau_x) with [H, c†] commutator
         updated_ops.clear();
-        updated_ops[tau_x] = comm_O2_cdag[key];
+        updated_ops[tau_x] = comm_H_cdag[key];
 
         data.imp_trace.try_replace(updated_ops);
         auto [w, rw] = data.imp_trace.compute();
@@ -138,17 +134,17 @@ namespace triqs_cthyb {
         auto tau_y = y.first;
         auto key_y = std::make_pair(block_idx, y.second);
 
-        // Insert O1 commutator once for this y (outer loop)
+        // Insert H commutator once for this y (outer loop)
         updated_ops.clear();
-        updated_ops[tau_y] = comm_O1_c[key_y];
+        updated_ops[tau_y] = comm_H_c[key_y];
 
         for (int i = 0; i < det_size; ++i) {
           auto const &x = det.get_x(i);
           auto tau_x = x.first;
           auto key_x = std::make_pair(block_idx, x.second);
 
-          // Insert O2 commutator for this x
-          updated_ops[tau_x] = comm_O2_cdag[key_x];
+          // Insert H commutator for this x
+          updated_ops[tau_x] = comm_H_cdag[key_x];
 
           data.imp_trace.try_replace(updated_ops);
           auto [w, rw] = data.imp_trace.compute();

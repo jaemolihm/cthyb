@@ -402,46 +402,18 @@ namespace triqs_cthyb {
     }
 
     if (params.measure_G_tau_with_O1_O2) {
-
-      const auto &[O1, O2] = *params.measure_G_tau_with_O1_O2;
-      auto comm_0          = O1 * O2 - O2 * O1;
-      auto comm_1          = O1 * _h_loc - _h_loc * O1;
-      auto comm_2          = O2 * _h_loc - _h_loc * O2;
-
-      if (!comm_0.is_zero() || !comm_1.is_zero() || !comm_2.is_zero()) {
-        if (params.verbosity >= 2) {
-          TRIQS_RUNTIME_ERROR << "Error: measure_G_tau_with_O1_O2, supplied operators does not commute with "
-                                 "the local Hamiltonian.\n"
-                              << "[O1, O2] = " << comm_0 << "\n"
-                              << "[O1, H_loc] = " << comm_1 << "\n"
-                              << "[O2, H_loc] = " << comm_2 << "\n";
-        }
-      }
+      // Always use h_loc (ignore parameters)
       qmc.add_measure(
-         measure_G_tau_with_O1_O2{data, n_tau, gf_struct, O1, O2, container_set()},
+         measure_G_tau_with_O1_O2{data, n_tau, gf_struct, _h_loc, container_set()},
          "G_tau_with_O1_O2 measure");
     }
 
     // DEBUG VERSION: measure_G_tau_with_O1_O2_debug with trace caching optimization
     // This allows performance comparison with the original implementation
     if (params.measure_G_tau_with_O1_O2_debug) {
-
-      const auto &[O1, O2] = *params.measure_G_tau_with_O1_O2_debug;
-      auto comm_0          = O1 * O2 - O2 * O1;
-      auto comm_1          = O1 * _h_loc - _h_loc * O1;
-      auto comm_2          = O2 * _h_loc - _h_loc * O2;
-
-      if (!comm_0.is_zero() || !comm_1.is_zero() || !comm_2.is_zero()) {
-        if (params.verbosity >= 2) {
-          TRIQS_RUNTIME_ERROR << "Error: measure_G_tau_with_O1_O2_debug, supplied operators does not commute with "
-                                 "the local Hamiltonian.\n"
-                              << "[O1, O2] = " << comm_0 << "\n"
-                              << "[O1, H_loc] = " << comm_1 << "\n"
-                              << "[O2, H_loc] = " << comm_2 << "\n";
-        }
-      }
+      // Always use h_loc (ignore parameters)
       qmc.add_measure(
-         measure_G_tau_with_O1_O2_debug{data, n_tau, gf_struct, O1, O2, container_set()},
+         measure_G_tau_with_O1_O2_debug{data, n_tau, gf_struct, _h_loc, container_set()},
          "G_tau_with_O1_O2_debug measure (optimized)");
     }
 
