@@ -253,11 +253,6 @@ namespace triqs_cthyb {
       int last = G_block.mesh().size() - 1;
       G_block[0] *= 2;
       G_block[last] *= 2;
-
-      // Enforce fermionic discontinuity: G(0⁻) - G(0⁺) = -1
-      // NOTE: Commented out - not applicable for operator-decorated Green's functions
-      // G_block[0] = 0.5 * matrix_t(G_block[0] - 1 - G_block[last]);
-      // G_block[last] = -1 - G_block[0];
     }
 
     // Normalize G_tau_with_O1

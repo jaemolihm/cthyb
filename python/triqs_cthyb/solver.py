@@ -77,6 +77,16 @@ class Solver(SolverCore):
         self.Sigma_moments = None
         self.Sigma_Hartree = None
 
+        # Improved Estimator Green's functions (iω): F^L, F^R, I
+        self.G_iw_IE_FL = None
+        self.G_iw_IE_FR = None
+        self.G_iw_IE_I = None
+
+        # Improved Estimator self-energies: Sigma^FG, Sigma^{IFG}
+        self.Sigma_iw_IE_asym_L = None
+        self.Sigma_iw_IE_asym_R = None
+        self.Sigma_iw_IE_sym = None
+
     def solve(self, **params_kw):
         r"""
         Solve the impurity problem for a given G0_iw. If ``measure_G_tau``
@@ -111,6 +121,19 @@ class Solver(SolverCore):
                     Index of ``iw`` from which to start fitting.
         fit_max_n : integer, optional, default = ``n_iw``
                     Index of ``iw`` to fit until.
+        measure_G_tau_with_O1_O2_debug : tuple(Operator, Operator), optional, default = None
+                           Enable operator-decorated measurements for Improved Estimator.
+                           Requires measure_G_tau = True.
+                           If provided, post-processing will compute:
+
+                           - G_iw_IE_FL, G_iw_IE_FR, G_iw_IE_I (Improved Estimator GFs: F^L, F^R, I)
+                           - Sigma_iw_IE_asym_L, Sigma_iw_IE_asym_R (asymmetric self-energies: Sigma^FG)
+                           - Sigma_iw_IE_sym (symmetric self-energy: Sigma^{IFG})
+
+                           Reference: Fabian B. Kugler, Phys. Rev. B 105, 245132 (2022).
+                           G_iw_IE_FL (F^L), G_iw_IE_FR (F^R), G_iw_IE_I (I): Eqs.(4, 5, A3, A4).
+                           Sigma_iw_IE_asym_L, Sigma_iw_IE_asym_R (Sigma^FG): Eqs.(A7a, A7b).
+                           Sigma_iw_IE_sym (Sigma^{IFG}): Eq.(A7i).
         """
 
         # -- Deprecation checks for measure parameters
@@ -234,5 +257,85 @@ class Solver(SolverCore):
                     g.replace_by_tail_in_fit_window(tail)
 
                 self.Sigma_iw = dyson(G0_iw=G0_iw, G_iw=self.G_iw)
+
+        # Post-processing for measure_G_tau_with_O1_O2_debug
+        if perform_post_proc and self.last_solve_parameters.get("measure_G_tau_with_O1_O2_debug"):
+
+            # Error checking: measure_G_tau must be enabled
+            if not self.last_solve_parameters.get("measure_G_tau", False):
+                raise RuntimeError(
+                    "Post-processing for measure_G_tau_with_O1_O2_debug requires measure_G_tau=True. "
+                    "Please enable measure_G_tau in solve() parameters."
+                )
+
+            # Get the measured operator-decorated Green's functions from C++
+            # Note: These are accessed with _debug suffix
+            # Check that measurements exist
+            if self.G_tau_with_O1_debug is None or self.G_tau_with_O2_debug is None or self.G_tau_with_O1_O2_debug is None:
+                raise RuntimeError(
+                    "measure_G_tau_with_O1_O2_debug measurements not found. "
+                    "Ensure the measurement was enabled correctly."
+                )
+
+            # Compute Improved Estimator Green's functions in imaginary time
+            # Remove H_loc0 contribution from the measured operator-decorated GFs
+            # In cthyb, we measured the following:
+            # G_with_O1    = <[H_loc, c](t),         c† (0)>
+            # G_with_O2    = <        c (t), [H_loc, c†](0)>
+            # G_with_O1_O2 = <[H_loc, c](t), [H_loc, c†](0)>
+            #
+            # We want q = [c, H_int], q† = [H_int, c†] with H_loc = H_loc0 + H_int
+            # [H_loc, c ] = [H_loc0, c ] + [H_int, c ] = - e0_loc * c  - q
+            # [H_loc, c†] = [H_loc0, c†] + [H_int, c†] = + c† * e0_loc + q†
+            #
+            # The composite Green functions are:
+            # G_IE_1  = <q(t), c†(0)> = -G_with_O1 - e0_loc @ G
+            # G_IE_2  = <c(t), q†(0)> = +G_with_O2 - G @ e0_loc
+            # G_IE_12 = <q(t), q†(0)> = -G_with_O1_O2 - G_IE_1 @ e0_loc - e0_loc @ G_IE_2 - e0_loc @ G @ e0_loc
+
+            # Extract e0_loc from h_loc0 using block_matrix_from_op
+            # This converts the operator representation to block matrix form
+            e0_loc_dict = block_matrix_from_op(self.h_loc0, self.gf_struct)
+
+            G_tau_IE_FL = -self.G_tau_with_O1_debug.copy()
+            G_tau_IE_FR =  self.G_tau_with_O2_debug.copy()
+            G_tau_IE_I  = -self.G_tau_with_O1_O2_debug.copy()
+
+            for bl_idx, (bl, g) in enumerate(self.G_tau):
+                e0_loc = e0_loc_dict[bl_idx]
+                G_tau_IE_FL[bl] -= e0_loc @ g
+                G_tau_IE_FR[bl] -= g @ e0_loc
+                G_tau_IE_I[bl]  -= G_tau_IE_FL[bl] @ e0_loc
+                G_tau_IE_I[bl]  -= e0_loc @ G_tau_IE_FR[bl]
+                G_tau_IE_I[bl]  -= e0_loc @ g @ e0_loc
+
+            # Compute Improved Estimator Green's functions in frequency domain
+            # by Fourier transforming the imaginary time versions
+            self.G_iw_IE_FL = self.G_iw.copy()
+            self.G_iw_IE_FR = self.G_iw.copy()
+            self.G_iw_IE_I  = self.G_iw.copy()
+            self.G_iw_IE_FL.zero()
+            self.G_iw_IE_FR.zero()
+            self.G_iw_IE_I.zero()
+
+            for bl, g in self.G_iw:
+                # Do not use moments, only impose the trivial limit lim_w->infty G ~ 0 + O(1/w)
+                known_moments = make_zero_tail(g, 1)
+                self.G_iw_IE_FL[bl].set_from_fourier(G_tau_IE_FL[bl], known_moments)
+                self.G_iw_IE_FR[bl].set_from_fourier(G_tau_IE_FR[bl], known_moments)
+                self.G_iw_IE_I[bl].set_from_fourier(G_tau_IE_I[bl], known_moments)
+
+            # Compute Improved Estimator self-energies [Eqs.(A7a, A7b, A7i)]
+            self.Sigma_iw_IE_asym_L = self.G_iw_IE_FL * inverse(self.G_iw)
+            self.Sigma_iw_IE_asym_R = inverse(self.G_iw) * self.G_iw_IE_FR
+            self.Sigma_iw_IE_sym = self.G_iw_IE_I - self.G_iw_IE_FL * inverse(self.G_iw) * self.G_iw_IE_FR
+
+            # Add Hartree self-energy if available (from density matrix measurement)
+            if self.Sigma_Hartree is not None:
+                for bl, g in self.Sigma_iw_IE_sym:
+                    g += self.Sigma_Hartree[bl]
+            else:
+                if mpi.is_master_node():
+                    print("WARNING: measure_density_matrix=False, Hartree self-energy not added to Sigma_iw_IE_sym.")
 
         return solve_status
