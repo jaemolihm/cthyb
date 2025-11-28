@@ -132,11 +132,11 @@ namespace triqs_cthyb {
     /// Minumum of operator insertions in: O_tau by insertion measure
     int measure_O_tau_min_ins = 10;
 
-    /// Measure G_tau_with_O1_O2 by insertion (always uses h_loc)
-    bool measure_G_tau_with_O1_O2 = false;
+    /// Measure G_tau with improved estimator by insertion
+    bool measure_G_tau_impr_est = false;
 
-    /// DEBUG: Measure G_tau_with_O1_O2 with optimized trace caching (for performance comparison, always uses h_loc)
-    bool measure_G_tau_with_O1_O2_debug = false;
+    /// V2: Measure G_tau with improved estimator using optimized trace caching (for performance comparison)
+    bool measure_G_tau_impr_est_v2 = false;
 
     /// Measure G^4(tau,tau',tau'') with three fermionic times.
     bool measure_G2_tau = false;

@@ -225,9 +225,9 @@ c.add_method("""void solve (**solve_parameters_t)""",
 +-------------------------------+----------------------------------------------------------+-------------------------------+-------------------------------------------------------------------------------------------------------------------+
 | measure_O_tau_min_ins         | int                                                      | 10                            | Minumum of operator insertions in: O_tau by insertion measure                                                     |
 +-------------------------------+----------------------------------------------------------+-------------------------------+-------------------------------------------------------------------------------------------------------------------+
-| measure_G_tau_with_O1_O2      | bool                                                     | false                         | Measure G_tau_with_O1_O2 by insertion (always uses h_loc)                                                         |
+| measure_G_tau_impr_est        | bool                                                     | false                         | Measure G_tau with improved estimator by insertion (always uses h_loc)                                            |
 +-------------------------------+----------------------------------------------------------+-------------------------------+-------------------------------------------------------------------------------------------------------------------+
-| measure_G_tau_with_O1_O2_debug| bool                                                     | false                         | DEBUG: Measure G_tau_with_O1_O2 with optimized trace caching (for performance comparison, always uses h_loc)      |
+| measure_G_tau_impr_est_v2     | bool                                                     | false                         | V2: Measure G_tau with improved estimator using optimized trace caching (for performance comparison, uses h_loc)  |
 +-------------------------------+----------------------------------------------------------+-------------------------------+-------------------------------------------------------------------------------------------------------------------+
 | measure_G2_tau                | bool                                                     | false                         | Measure G^4(tau,tau',tau'') with three fermionic times.                                                           |
 +-------------------------------+----------------------------------------------------------+-------------------------------+-------------------------------------------------------------------------------------------------------------------+
@@ -480,15 +480,15 @@ c.add_member(c_name = "measure_O_tau_min_ins",
              initializer = """ 10 """,
              doc = r"""Minumum of operator insertions in: O_tau by insertion measure""")
 
-c.add_member(c_name = "measure_G_tau_with_O1_O2",
+c.add_member(c_name = "measure_G_tau_impr_est",
              c_type = "bool",
              initializer = """ false """,
-             doc = r"""Measure G_tau_with_O1_O2 by insertion (always uses h_loc)""")
+             doc = r"""Measure G_tau with improved estimator by insertion (always uses h_loc)""")
 
-c.add_member(c_name = "measure_G_tau_with_O1_O2_debug",
+c.add_member(c_name = "measure_G_tau_impr_est_v2",
              c_type = "bool",
              initializer = """ false """,
-             doc = r"""DEBUG: Measure G_tau_with_O1_O2 with optimized trace caching (for performance comparison, always uses h_loc)""")
+             doc = r"""V2: Measure G_tau with improved estimator using optimized trace caching (for performance comparison, always uses h_loc)""")
 
 c.add_member(c_name = "measure_G2_tau",
              c_type = "bool",

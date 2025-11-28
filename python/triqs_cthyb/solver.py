@@ -121,7 +121,7 @@ class Solver(SolverCore):
                     Index of ``iw`` from which to start fitting.
         fit_max_n : integer, optional, default = ``n_iw``
                     Index of ``iw`` to fit until.
-        measure_G_tau_with_O1_O2_debug : bool, optional, default = False
+        measure_G_tau_impr_est_v2 : bool, optional, default = False
                            Enable composite Green's function measurements for Improved Estimator.
                            Requires measure_G_tau = True.
                            If provided, post-processing will compute:
@@ -258,13 +258,13 @@ class Solver(SolverCore):
 
                 self.Sigma_iw = dyson(G0_iw=G0_iw, G_iw=self.G_iw)
 
-        # Post-processing for measure_G_tau_with_O1_O2_debug
-        if perform_post_proc and self.last_solve_parameters.get("measure_G_tau_with_O1_O2_debug"):
+        # Post-processing for measure_G_tau_impr_est_v2
+        if perform_post_proc and self.last_solve_parameters.get("measure_G_tau_impr_est_v2"):
 
             # Error checking: measure_G_tau must be enabled
             if not self.last_solve_parameters.get("measure_G_tau", False):
                 raise RuntimeError(
-                    "Post-processing for measure_G_tau_with_O1_O2_debug requires measure_G_tau=True. "
+                    "Post-processing for measure_G_tau_impr_est_v2 requires measure_G_tau=True. "
                     "Please enable measure_G_tau in solve() parameters."
                 )
 
@@ -273,7 +273,7 @@ class Solver(SolverCore):
             # Check that measurements exist
             if self.G_tau_with_O1_debug is None or self.G_tau_with_O2_debug is None or self.G_tau_with_O1_O2_debug is None:
                 raise RuntimeError(
-                    "measure_G_tau_with_O1_O2_debug measurements not found. "
+                    "measure_G_tau_impr_est_v2 measurements not found. "
                     "Ensure the measurement was enabled correctly."
                 )
 

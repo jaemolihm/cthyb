@@ -32,15 +32,15 @@ namespace triqs_cthyb {
   using namespace triqs::gfs;
   using namespace triqs::mesh;
 
-  // DEBUG VERSION: Measure imaginary time Green's function with operator insertions (all blocks)
+  // V2 VERSION: Measure imaginary time Green's function with operator insertions (all blocks)
   // This version implements single-operator trace caching optimization.
-  // For performance comparison with the original measure_G_tau_with_O1_O2.
-  class measure_G_tau_with_O1_O2_debug {
+  // For performance comparison with the original measure_G_tau_impr_est.
+  class measure_G_tau_impr_est_v2 {
 
     public:
-    measure_G_tau_with_O1_O2_debug(qmc_data const &data, int n_tau, gf_struct_t const &gf_struct,
-                                   many_body_op_t const &h_op,
-                                   container_set_t &results);
+    measure_G_tau_impr_est_v2(qmc_data const &data, int n_tau, gf_struct_t const &gf_struct,
+                              many_body_op_t const &h_op,
+                              container_set_t &results);
     void accumulate(mc_weight_t s);
     void collect_results(mpi::communicator const &c);
 

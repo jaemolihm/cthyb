@@ -39,8 +39,8 @@
 #include "./measures/G_tau.hpp"
 #include "./measures/G_l.hpp"
 #include "./measures/O_tau_ins.hpp"
-#include "./measures/G_tau_with_O1_O2.hpp"
-#include "./measures/G_tau_with_O1_O2_debug.hpp"
+#include "./measures/G_tau_impr_est.hpp"
+#include "./measures/G_tau_impr_est_v2.hpp"
 #include "./measures/perturbation_hist.hpp"
 #include "./measures/density_matrix.hpp"
 #include "./measures/average_sign.hpp"
@@ -401,20 +401,20 @@ namespace triqs_cthyb {
          "O_tau insertion measure");
     }
 
-    if (params.measure_G_tau_with_O1_O2) {
+    if (params.measure_G_tau_impr_est) {
       // Always use h_loc (ignore parameters)
       qmc.add_measure(
-         measure_G_tau_with_O1_O2{data, n_tau, gf_struct, _h_loc, container_set()},
-         "G_tau_with_O1_O2 measure");
+         measure_G_tau_impr_est{data, n_tau, gf_struct, _h_loc, container_set()},
+         "G_tau improved estimator measure");
     }
 
-    // DEBUG VERSION: measure_G_tau_with_O1_O2_debug with trace caching optimization
+    // V2 VERSION: measure_G_tau_impr_est_v2 with trace caching optimization
     // This allows performance comparison with the original implementation
-    if (params.measure_G_tau_with_O1_O2_debug) {
+    if (params.measure_G_tau_impr_est_v2) {
       // Always use h_loc (ignore parameters)
       qmc.add_measure(
-         measure_G_tau_with_O1_O2_debug{data, n_tau, gf_struct, _h_loc, container_set()},
-         "G_tau_with_O1_O2_debug measure (optimized)");
+         measure_G_tau_impr_est_v2{data, n_tau, gf_struct, _h_loc, container_set()},
+         "G_tau improved estimator measure (v2 optimized)");
     }
 
     if (params.measure_G_tau) {
