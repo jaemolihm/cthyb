@@ -1,11 +1,11 @@
 # Copy h5 files to binary dir
-file(GLOB_RECURSE all_h5_ref_files RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} *.ref.h5)
+file(GLOB_RECURSE all_h5_ref_files RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} *.ref.h5 *.bench.h5)
 foreach(file ${all_h5_ref_files})
   configure_file(${file} ${file} COPYONLY)
 endforeach()
 
 # List of all tests
-set(all_tests setup_Delta_tau_and_h_loc single_site_bethe atomic_observables kanamori_py slater measure_static histograms move_global h5_read_write h5_read_write_more O_tau_ins high_freq_tail hermitian_density_matrix)
+set(all_tests setup_Delta_tau_and_h_loc single_site_bethe atomic_observables kanamori_py slater measure_static histograms move_global h5_read_write h5_read_write_more O_tau_ins high_freq_tail hermitian_density_matrix G_tau_impr_est)
 if(Local_hamiltonian_is_complex)
   list(APPEND all_tests atomic_gf_complex atomdiag_ed complex_bug81)
   if(Hybridisation_is_complex)
