@@ -31,16 +31,16 @@ namespace triqs_cthyb {
                                                  many_body_op_t const &h_op,
                                                  container_set_t &results)
      : data(data), average_sign(0) {
-    results.G_tau_with_O1_O2 = block_gf<imtime, G_target_t>({data.config.beta(), Fermion, n_tau}, gf_struct);
-    G_tau_with_O1_O2.rebind(*results.G_tau_with_O1_O2);
+    results.G_tau_with_O1_O2_accum = block_gf<imtime, G_target_t>({data.config.beta(), Fermion, n_tau}, gf_struct);
+    G_tau_with_O1_O2.rebind(*results.G_tau_with_O1_O2_accum);
     G_tau_with_O1_O2() = 0.0;
 
-    results.G_tau_with_O1 = block_gf<imtime, G_target_t>({data.config.beta(), Fermion, n_tau}, gf_struct);
-    G_tau_with_O1.rebind(*results.G_tau_with_O1);
+    results.G_tau_with_O1_accum = block_gf<imtime, G_target_t>({data.config.beta(), Fermion, n_tau}, gf_struct);
+    G_tau_with_O1.rebind(*results.G_tau_with_O1_accum);
     G_tau_with_O1() = 0.0;
 
-    results.G_tau_with_O2 = block_gf<imtime, G_target_t>({data.config.beta(), Fermion, n_tau}, gf_struct);
-    G_tau_with_O2.rebind(*results.G_tau_with_O2);
+    results.G_tau_with_O2_accum = block_gf<imtime, G_target_t>({data.config.beta(), Fermion, n_tau}, gf_struct);
+    G_tau_with_O2.rebind(*results.G_tau_with_O2_accum);
     G_tau_with_O2() = 0.0;
 
     // Attach h_op to impurity trace as auxiliary operator

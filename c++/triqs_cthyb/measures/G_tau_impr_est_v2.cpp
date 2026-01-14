@@ -34,17 +34,17 @@ namespace triqs_cthyb {
                                                        many_body_op_t const &h_op,
                                                        container_set_t &results)
      : data(data), average_sign(0) {
-    // Use debug container fields
-    results.G_tau_with_O1_O2_debug = block_gf<imtime, G_target_t>({data.config.beta(), Fermion, n_tau}, gf_struct);
-    G_tau_with_O1_O2.rebind(*results.G_tau_with_O1_O2_debug);
+    // Use debug accumulation container fields
+    results.G_tau_with_O1_O2_debug_accum = block_gf<imtime, G_target_t>({data.config.beta(), Fermion, n_tau}, gf_struct);
+    G_tau_with_O1_O2.rebind(*results.G_tau_with_O1_O2_debug_accum);
     G_tau_with_O1_O2() = 0.0;
 
-    results.G_tau_with_O1_debug = block_gf<imtime, G_target_t>({data.config.beta(), Fermion, n_tau}, gf_struct);
-    G_tau_with_O1.rebind(*results.G_tau_with_O1_debug);
+    results.G_tau_with_O1_debug_accum = block_gf<imtime, G_target_t>({data.config.beta(), Fermion, n_tau}, gf_struct);
+    G_tau_with_O1.rebind(*results.G_tau_with_O1_debug_accum);
     G_tau_with_O1() = 0.0;
 
-    results.G_tau_with_O2_debug = block_gf<imtime, G_target_t>({data.config.beta(), Fermion, n_tau}, gf_struct);
-    G_tau_with_O2.rebind(*results.G_tau_with_O2_debug);
+    results.G_tau_with_O2_debug_accum = block_gf<imtime, G_target_t>({data.config.beta(), Fermion, n_tau}, gf_struct);
+    G_tau_with_O2.rebind(*results.G_tau_with_O2_debug_accum);
     G_tau_with_O2() = 0.0;
 
     // Pre-construct H_loc commutator operators for all (block, inner_index) pairs

@@ -36,6 +36,15 @@ namespace triqs_cthyb {
     h5_write(grp, "G_tau_with_O1_O2", c.G_tau_with_O1_O2);
     h5_write(grp, "G_tau_with_O1", c.G_tau_with_O1);
     h5_write(grp, "G_tau_with_O2", c.G_tau_with_O2);
+    h5_write(grp, "G_tau_with_O1_O2_accum", c.G_tau_with_O1_O2_accum);
+    h5_write(grp, "G_tau_with_O1_accum", c.G_tau_with_O1_accum);
+    h5_write(grp, "G_tau_with_O2_accum", c.G_tau_with_O2_accum);
+    h5_write(grp, "G_tau_with_O1_O2_debug", c.G_tau_with_O1_O2_debug);
+    h5_write(grp, "G_tau_with_O1_debug", c.G_tau_with_O1_debug);
+    h5_write(grp, "G_tau_with_O2_debug", c.G_tau_with_O2_debug);
+    h5_write(grp, "G_tau_with_O1_O2_debug_accum", c.G_tau_with_O1_O2_debug_accum);
+    h5_write(grp, "G_tau_with_O1_debug_accum", c.G_tau_with_O1_debug_accum);
+    h5_write(grp, "G_tau_with_O2_debug_accum", c.G_tau_with_O2_debug_accum);
     h5_write(grp, "perturbation_order", c.perturbation_order);
     h5_write(grp, "perturbation_order_total", c.perturbation_order_total);
 
@@ -63,6 +72,15 @@ namespace triqs_cthyb {
     h5::try_read(grp, "G_tau_with_O1_O2", c.G_tau_with_O1_O2);
     h5::try_read(grp, "G_tau_with_O1", c.G_tau_with_O1);
     h5::try_read(grp, "G_tau_with_O2", c.G_tau_with_O2);
+    h5::try_read(grp, "G_tau_with_O1_O2_accum", c.G_tau_with_O1_O2_accum);
+    h5::try_read(grp, "G_tau_with_O1_accum", c.G_tau_with_O1_accum);
+    h5::try_read(grp, "G_tau_with_O2_accum", c.G_tau_with_O2_accum);
+    h5::try_read(grp, "G_tau_with_O1_O2_debug", c.G_tau_with_O1_O2_debug);
+    h5::try_read(grp, "G_tau_with_O1_debug", c.G_tau_with_O1_debug);
+    h5::try_read(grp, "G_tau_with_O2_debug", c.G_tau_with_O2_debug);
+    h5::try_read(grp, "G_tau_with_O1_O2_debug_accum", c.G_tau_with_O1_O2_debug_accum);
+    h5::try_read(grp, "G_tau_with_O1_debug_accum", c.G_tau_with_O1_debug_accum);
+    h5::try_read(grp, "G_tau_with_O2_debug_accum", c.G_tau_with_O2_debug_accum);
     h5::try_read(grp, "perturbation_order", c.perturbation_order);
     h5::try_read(grp, "perturbation_order_total", c.perturbation_order_total);
 

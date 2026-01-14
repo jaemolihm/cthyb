@@ -402,6 +402,11 @@ namespace triqs_cthyb {
     }
 
     if (params.measure_G_tau_impr_est) {
+      // Initialize always-complex output containers
+      G_tau_with_O1_O2 = block_gf<imtime>{{beta, Fermion, n_tau}, gf_struct};
+      G_tau_with_O1 = block_gf<imtime>{{beta, Fermion, n_tau}, gf_struct};
+      G_tau_with_O2 = block_gf<imtime>{{beta, Fermion, n_tau}, gf_struct};
+
       // Always use h_loc (ignore parameters)
       qmc.add_measure(
          measure_G_tau_impr_est{data, n_tau, gf_struct, _h_loc, container_set()},
@@ -411,6 +416,11 @@ namespace triqs_cthyb {
     // V2 VERSION: measure_G_tau_impr_est_v2 with trace caching optimization
     // This allows performance comparison with the original implementation
     if (params.measure_G_tau_impr_est_v2) {
+      // Initialize always-complex output containers
+      G_tau_with_O1_O2_debug = block_gf<imtime>{{beta, Fermion, n_tau}, gf_struct};
+      G_tau_with_O1_debug = block_gf<imtime>{{beta, Fermion, n_tau}, gf_struct};
+      G_tau_with_O2_debug = block_gf<imtime>{{beta, Fermion, n_tau}, gf_struct};
+
       // Always use h_loc (ignore parameters)
       qmc.add_measure(
          measure_G_tau_impr_est_v2{data, n_tau, gf_struct, _h_loc, container_set()},
@@ -476,5 +486,15 @@ namespace triqs_cthyb {
 
     // Copy local (real or complex) G_tau back to complex G_tau
     if (G_tau && G_tau_accum) *G_tau = *G_tau_accum;
+
+    // Copy improved estimator accumulators to always-complex output containers (v1)
+    if (G_tau_with_O1_O2 && G_tau_with_O1_O2_accum) *G_tau_with_O1_O2 = *G_tau_with_O1_O2_accum;
+    if (G_tau_with_O1 && G_tau_with_O1_accum) *G_tau_with_O1 = *G_tau_with_O1_accum;
+    if (G_tau_with_O2 && G_tau_with_O2_accum) *G_tau_with_O2 = *G_tau_with_O2_accum;
+
+    // Copy improved estimator accumulators to always-complex output containers (v2 debug)
+    if (G_tau_with_O1_O2_debug && G_tau_with_O1_O2_debug_accum) *G_tau_with_O1_O2_debug = *G_tau_with_O1_O2_debug_accum;
+    if (G_tau_with_O1_debug && G_tau_with_O1_debug_accum) *G_tau_with_O1_debug = *G_tau_with_O1_debug_accum;
+    if (G_tau_with_O2_debug && G_tau_with_O2_debug_accum) *G_tau_with_O2_debug = *G_tau_with_O2_debug_accum;
   }
 } // namespace triqs_cthyb
