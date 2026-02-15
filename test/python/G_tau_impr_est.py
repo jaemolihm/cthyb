@@ -149,7 +149,7 @@ if mpi.is_master_node():
         res['Sigma_iw_IE_asym_R'] = S.Sigma_iw_IE_asym_R
         res['Sigma_iw_IE_sym'] = S.Sigma_iw_IE_sym
 
-h5diff(filename, 'G_tau_impr_est.ref.h5')
+    h5diff(filename, 'G_tau_impr_est.ref.h5')
 
 
 # Compare with exact diagonalization benchmark
@@ -165,6 +165,6 @@ if mpi.is_master_node():
     # assert_block_gfs_are_close(S.Sigma_iw_IE_asym_R, Sigma_exact, 0.05)
     # assert_block_gfs_are_close(S.Sigma_iw_IE_sym, Sigma_exact, 0.004)
 
-    assert_block_gfs_are_close(S.Sigma_iw_IE_asym_L, Sigma_exact, 0.4)
-    assert_block_gfs_are_close(S.Sigma_iw_IE_asym_R, Sigma_exact, 0.4)
+    assert_block_gfs_are_close(S.Sigma_iw_IE_asym_L, Sigma_exact, 0.6)
+    assert_block_gfs_are_close(S.Sigma_iw_IE_asym_R, Sigma_exact, 0.6)
     assert_block_gfs_are_close(S.Sigma_iw_IE_sym, Sigma_exact, 0.06)

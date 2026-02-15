@@ -69,6 +69,7 @@ class Solver(SolverCore):
         self.Sigma_iw_raw = None
         self.G_iw = self.Sigma_iw.copy()
         self.G_iw_raw = None
+        self.G_iw_wo_moments = None
         self.gf_struct = gf_struct
         self.n_iw = n_iw
         self.n_tau = n_tau
@@ -310,25 +311,25 @@ class Solver(SolverCore):
                 G_tau_IE_I[bl]  -= e0_loc @ g @ e0_loc
 
             # Compute Improved Estimator Green's functions in frequency domain
-            # by Fourier transforming the imaginary time versions
+            # by Fourier transforming the imaginary time versions (no known moments)
+            # G_iw_wo_moments: G_tau Fourier-transformed without moments, for consistency
+            self.G_iw_wo_moments = self.G_iw.copy()
             self.G_iw_IE_FL = self.G_iw.copy()
             self.G_iw_IE_FR = self.G_iw.copy()
             self.G_iw_IE_I  = self.G_iw.copy()
-            self.G_iw_IE_FL.zero()
-            self.G_iw_IE_FR.zero()
-            self.G_iw_IE_I.zero()
 
             for bl, g in self.G_iw:
-                # Do not use moments, only impose the trivial limit lim_w->infty G ~ 0 + O(1/w)
                 known_moments = make_zero_tail(g, 1)
+                self.G_iw_wo_moments[bl].set_from_fourier(self.G_tau[bl], known_moments)
                 self.G_iw_IE_FL[bl].set_from_fourier(G_tau_IE_FL[bl], known_moments)
                 self.G_iw_IE_FR[bl].set_from_fourier(G_tau_IE_FR[bl], known_moments)
                 self.G_iw_IE_I[bl].set_from_fourier(G_tau_IE_I[bl], known_moments)
 
             # Compute Improved Estimator self-energies [Eqs.(A7a, A7b, A7i)]
-            self.Sigma_iw_IE_asym_L = self.G_iw_IE_FL * inverse(self.G_iw)
-            self.Sigma_iw_IE_asym_R = inverse(self.G_iw) * self.G_iw_IE_FR
-            self.Sigma_iw_IE_sym = self.G_iw_IE_I - self.G_iw_IE_FL * inverse(self.G_iw) * self.G_iw_IE_FR
+            # Use G_iw_wo_moments for consistency: all GFs Fourier-transformed without moments
+            self.Sigma_iw_IE_asym_L = self.G_iw_IE_FL * inverse(self.G_iw_wo_moments)
+            self.Sigma_iw_IE_asym_R = inverse(self.G_iw_wo_moments) * self.G_iw_IE_FR
+            self.Sigma_iw_IE_sym = self.G_iw_IE_I - self.G_iw_IE_FL * inverse(self.G_iw_wo_moments) * self.G_iw_IE_FR
 
             # Add Hartree self-energy if available (from density matrix measurement)
             if self.Sigma_Hartree is not None:
